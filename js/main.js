@@ -1,10 +1,9 @@
-const playerDiv = document.querySelector('.player');
-
 class Player {
     constructor(playerDiv) {
       this.col = 0;
       this.row = 0;
       this.playerDiv = playerDiv;
+      this.direction = 90;
     }
   }
   
@@ -12,17 +11,10 @@ class Player {
     constructor(cols, rows, cellSize) {
       this.cols = cols;
       this.rows = rows;
-      this.cellSize = cellSize;  
-      this.generate();
-    }
-
-    generate(){
-        this.mazeHeight = this.rows * this.cellSize;
-        this.mazeWidth = this.cols * this.cellSize;
-    }
+      this.cellSize = cellSize; 
+    } 
 }
   
-
 class Game {
     constructor(player, maze){
         this.step = 1;
@@ -47,8 +39,8 @@ class Game {
             } else if (event.keyCode === 39){
                self.moveRight();
             }
-          self.playerDiv.style.marginLeft = self.row * self.maze.cellSize + 'px';
-          self.playerDiv.style.marginTop= self.col * self.maze.cellSize + 'px';   
+
+          self.setStyle();
         }
     }
 
@@ -57,6 +49,7 @@ class Game {
             this.col = this.col - this.step;
         }
         this.player.col = this.col;
+        this.player.direction = 0;
     }
 
      moveDown (){
@@ -64,6 +57,7 @@ class Game {
             this.col = this.col + this.step;
         }
         this.player.col = this.col;
+        this.player.direction = 180;
     }
 
      moveLeft (){
@@ -71,6 +65,7 @@ class Game {
             this.row = this.row - this.step;
         }
         this.player.row = this.row;
+        this.player.direction = 270;
     }
 
      moveRight (){
@@ -78,12 +73,17 @@ class Game {
             this.row = this.row + this.step;
         }
         this.player.row = this.row;
+        this.player.direction = 90;
+    }
+
+    setStyle(){
+        this.playerDiv.style.marginLeft = this.row * this.maze.cellSize + 'px';
+        this.playerDiv.style.marginTop = this.col * this.maze.cellSize + 'px'; 
+        this.playerDiv.style.transform = `rotate(${this.player.direction}deg)`; 
     }
 }
 
-
-
-
+const playerDiv = document.querySelector('.player');
 const player = new Player(playerDiv);
 const maze = new Maze(7, 7, 100);
 const game = new Game(player, maze);
