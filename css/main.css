@@ -48,24 +48,3 @@ table {
     transition: all 250ms;
     transform: rotate(90deg);
 }
-
-button {
-    background: #a8a819;
-    height: 70px;
-    width: 140px;
-    border: 1px solid gray;
-    border-radius: 5px;
-    font-family: calibri;
-    text-transform: uppercase;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.4s;
-}
-
-button:hover {
-    background: #d3d300;
-}
-
-button:focus, button:active{
-    outline: none !important;
-}

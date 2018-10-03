@@ -34,21 +34,18 @@ class Maze {
 }
   
 class Game {
-    constructor(player, maze, step, button){
+    constructor(player, maze, step){
         this.step = step;
         this.player = player;
         this.playerDiv = player.playerDiv;
         this.maze = maze;
-        this.button = button;
-        this.animationIsActive = true;
         this.isWall = false;
-        this.addListener(); // init listeners
-        this.animateMove();
+        this.addListener(); // init listener
+        this.moveByTimer();
     }
 
     addListener(){
         document.addEventListener('keydown', this.moveByKeys.bind(this));  
-        this.button.addEventListener('click', this.animateMove.bind(this));
     }
 
     getMoveHandlers(){
@@ -85,19 +82,17 @@ class Game {
     moveByKeys(event){
         const moveHandlers = this.getMoveHandlers();
         const direction = KEY_CODES[event.keyCode.toString()]; //get direction 'UP'/'DOWN'/..
-        moveHandlers[direction].call(this); // define handler depending on direction
+        moveHandlers[direction].call(this); // call handler depending on direction
         this.updateView(); 
     }
 
     moveByTimer(){
-        if (this.animationIsActive) { // if animation is in progress, make move
-            this.makeSingleMove();
-            if (this.isWall) { // check whether the player faces the wall
-                this.rotateLeft();
-            }
-            this.updateView();
-            setTimeout(this.moveByTimer.bind(this), 1000);
-        } 
+        this.makeSingleMove();
+        if (this.isWall) { // check whether the player faces the wall
+            this.rotateLeft(); // if there is a wall, make a rotate
+        }
+        this.updateView();
+        setTimeout(this.moveByTimer.bind(this), 1000);
     }
 
     makeSingleMove(){
@@ -107,21 +102,6 @@ class Game {
         const direction = directionEntries.filter(entry => 
             entry[1] === this.player.direction)[0][0];
         moveHandlers[direction].call(this);
-    }
-
-    animateMove(event){
-        const [START_BTN_TEXT, STOP_BTN_TEXT] = ['Go by timer', 'Stop'];
-        if (event) { // if the method was initialized by click, change the animation status
-          this.animationIsActive = !this.animationIsActive;  
-        }
-
-        if (this.animationIsActive) {
-            this.button.textContent = STOP_BTN_TEXT;
-            this.moveByTimer();
-        } else {
-            this.button.textContent = START_BTN_TEXT;
-            clearTimeout(this.moveByTimer); // if animation was stopped clear interval and stop moving
-        }       
     }
 
     rotateLeft(){
