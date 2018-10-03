@@ -28,23 +28,15 @@ table {
 /*                  MY STYLES                         */
 .wrapper {
     display: flex;
-    width: 100%;
     align-items: center;
-}
-
-.maze {
-    width: 700px;
-    height: 700px;
-    border: 2px solid black;
-    background-image: url('../img/grid.gif');
     margin: 5px 10px;
+    position: relative;
 }
 
 .player {
-    width: 100px;
-    height: 100px;
-    margin-left: 0;
-    margin-top: 0;
+    left: 0;
+    top: 0;
     transition: all 250ms;
     transform: rotate(90deg);
+    position: absolute;
 }

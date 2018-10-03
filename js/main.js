@@ -12,25 +12,83 @@ const KEY_CODES = {
     37: 'LEFT'
 }
 
-const [COLS_COUNT, ROWS_COUNT, CELL_SIZE] = [7, 7, 100];
+const CELL_SIZE = 100;
+
+const matrix = [
+    [0, 0, 0, 0, 0, 1, 1],
+    [1, 1, 0, 1, 0, 1, 0],
+    [0, 1, 0, 1, 0, 0, 0],
+    [0, 1, 1, 1, 0, 1, 0],
+    [0, 0, 0, 0, 0, 1, 0],
+    [0, 1, 1, 0, 1, 1, 0],
+    [0, 0, 1, 0, 0, 0, 0], 
+]
+
 const STEP = 1;
 const BUTTON = document.querySelector('button');
+const wrapper = document.querySelector('.wrapper');
+const mazeCanvas = document.querySelector('.maze');
+var ctx = mazeCanvas.getContext('2d');
 
 class Player {
-    constructor(playerDiv) {
+    constructor(playerDiv, cellSize) {
       this.col = 0;
       this.row = 0;
+      this.cellSize = cellSize;
       this.playerDiv = playerDiv; // html-element which we are manipulating
       this.direction = DIRECTIONS.RIGHT; // initially the player faces right
+      this.generatePlayer();
+    }
+    generatePlayer(){
+        // size of player is equal to the cell size
+        this.playerDiv.style.width = this.cellSize + 'px'; 
+        this.playerDiv.style.height = this.cellSize + 'px'; 
     }
   }
   
 class Maze {
-    constructor(cols, rows, cellSize) {
-      this.cols = cols;
-      this.rows = rows;
-      this.cellSize = cellSize; 
+    constructor(matrix, cellSize, wrapper, mazeCanvas) {
+        this.matrix = matrix;
+        this.rows = matrix.length;
+        this.cols = matrix[0].length;
+        this.cellSize = cellSize; 
+        this.height = this.cols * this.cellSize;
+        this.width = this.rows * this.cellSize;
+        this.wrapper = wrapper;
+        this.mazeCanvas = mazeCanvas;
+        this.generateCanvas();
     } 
+
+    generateCanvas(){
+        this.wrapper.style.width = this.width + 'px';
+        this.wrapper.style.height = this.height + 'px';
+        this.mazeCanvas.width = this.width;
+        this.mazeCanvas.height = this.height;
+        this.drawGrid();
+        this.drawMaze();
+    }
+
+    drawGrid(){
+        ctx.strokeRect(0, 0, this.width, this.height); // draw maze border
+        for (let i = this.cellSize; i < this.width; i+=this.cellSize){ // draw vertical lines
+            ctx.fillRect(i, 0, 1, this.width);
+        }  
+       for (let j = this.cellSize; j < this.height; j +=this.cellSize){ // draw horizontal lines
+            ctx.fillRect(0, j, this.height, 1);
+        } 
+    }
+
+    drawMaze(){
+        this.matrix.forEach((row, rowI) => {
+            row.forEach((cell, cellI) =>{
+                if (cell){
+                    const x = cellI * this.cellSize; 
+                    const y = rowI * this.cellSize;
+                    ctx.fillRect(x, y, this.cellSize, this.cellSize);
+                }
+            });
+        });
+    }
 }
   
 class Game {
@@ -114,14 +172,15 @@ class Game {
     }
 
     updateView(){
-        this.playerDiv.style.marginLeft = this.player.col * this.maze.cellSize + 'px'; // move right/left
-        this.playerDiv.style.marginTop = this.player.row * this.maze.cellSize + 'px'; //move up/down
+        this.playerDiv.style.left = this.player.col * this.maze.cellSize + 'px'; // move right/left
+        this.playerDiv.style.top = this.player.row * this.maze.cellSize + 'px'; //move up/down
         this.playerDiv.style.transform = `rotate(${this.player.direction}deg)`; // update the direction of facing
     }
 }
 
-const player = new Player(document.querySelector('.player'));
-const maze = new Maze(COLS_COUNT, ROWS_COUNT, CELL_SIZE);
+const player = new Player(document.querySelector('.player'), CELL_SIZE);
+const maze = new Maze(matrix, CELL_SIZE, wrapper, mazeCanvas);
 const game = new Game(player, maze, STEP, BUTTON);
+
 
  
