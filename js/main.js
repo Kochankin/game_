@@ -1,9 +1,15 @@
+const [UP_DIRECTION, RIGHT_DIRECTION, DOWN_DIRECTION, LEFT_DIRECTION] = [0, 90, 180, 270];
+const [UP_KEY, RIGHT_KEY, DOWN_KEY, LEFT_KEY] = [38, 39, 40, 37];
+const [COLS_COUNT, ROWS_COUNT, CELL_SIZE] = [7, 7, 100];
+const STEP = 1;
+
+
 class Player {
     constructor(playerDiv) {
       this.col = 0;
       this.row = 0;
-      this.playerDiv = playerDiv;
-      this.direction = 90;
+      this.playerDiv = playerDiv; // html-element which we are manipulating
+      this.direction = RIGHT_DIRECTION; // initially the player faces right
     }
   }
   
@@ -16,77 +22,69 @@ class Player {
 }
   
 class Game {
-    constructor(player, maze){
-        this.step = 1;
+    constructor(player, maze, step){
+        this.step = step;
         this.player = player;
-        this.col = player.col;
-        this.row = player.row;
         this.playerDiv = player.playerDiv;
         this.maze = maze;
-        this.addListener();
+        this.addListener(); // init listeners
     }
 
     addListener(){
-        document.addEventListener('keydown', move);
-        const self = this;
-        function move(event){
-            if (event.keyCode === 38){
-                self.moveUp();
-            } else if (event.keyCode === 40){
-                self.moveDown();
-            } else if (event.keyCode === 37){
-                self.moveLeft();
-            } else if (event.keyCode === 39){
-               self.moveRight();
-            }
+        document.addEventListener('keydown', this.move.bind(this));  
+    }
 
-          self.setStyle();
+     move(event){
+        if (event.keyCode === UP_KEY){
+            this.moveUp();
+        } else if (event.keyCode === DOWN_KEY){
+            this.moveDown();
+        } else if (event.keyCode === LEFT_KEY){
+            this.moveLeft();
+        } else if (event.keyCode === RIGHT_KEY){
+            this.moveRight();
         }
+        this.setStyle(); // update the view
     }
 
     moveUp (){
-        if ((this.col - this.step) >= 0) {
-            this.col = this.col - this.step;
+        if ((this.player.row - this.step) >= 0) {
+            this.player.row -= this.step;
         }
-        this.player.col = this.col;
-        this.player.direction = 0;
+        this.player.direction = UP_DIRECTION;
     }
 
      moveDown (){
-        if ((this.col + this.step) < this.maze.rows) {
-            this.col = this.col + this.step;
+        if ((this.player.row + this.step) < this.maze.rows) {
+            this.player.row += this.step;
         }
-        this.player.col = this.col;
-        this.player.direction = 180;
+        this.player.direction = DOWN_DIRECTION;
     }
 
      moveLeft (){
-        if ((this.row - this.step) >= 0) {
-            this.row = this.row - this.step;
+        if ((this.player.col - this.step) >= 0) {
+            this.player.col -= this.step;
         }
-        this.player.row = this.row;
-        this.player.direction = 270;
+        this.player.direction = LEFT_DIRECTION;
     }
 
      moveRight (){
-        if ((this.row + this.step) < this.maze.rows) {
-            this.row = this.row + this.step;
+        if ((this.player.col + this.step) < this.maze.cols) {
+            this.player.col += this.step;
         }
-        this.player.row = this.row;
-        this.player.direction = 90;
+        this.player.direction = RIGHT_DIRECTION;
     }
 
     setStyle(){
-        this.playerDiv.style.marginLeft = this.row * this.maze.cellSize + 'px';
-        this.playerDiv.style.marginTop = this.col * this.maze.cellSize + 'px'; 
-        this.playerDiv.style.transform = `rotate(${this.player.direction}deg)`; 
+        this.playerDiv.style.marginLeft = this.player.col * this.maze.cellSize + 'px'; // move right/left
+        this.playerDiv.style.marginTop = this.player.row * this.maze.cellSize + 'px'; //move up/down
+        this.playerDiv.style.transform = `rotate(${this.player.direction}deg)`; // update the direction of facing
     }
 }
 
-const playerDiv = document.querySelector('.player');
-const player = new Player(playerDiv);
-const maze = new Maze(7, 7, 100);
-const game = new Game(player, maze);
+const player = new Player(document.querySelector('.player'));
+const maze = new Maze(COLS_COUNT, ROWS_COUNT, CELL_SIZE);
+const game = new Game(player, maze, STEP);
 
 
  

@@ -1,4 +1,4 @@
-* CSS RESET */
+/* CSS RESET */
 html, body, div, span, applet, object, iframe,h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym,
 address, big, cite, code,del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var,
 b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend,table, caption, tbody, tfoot, thead,
@@ -25,13 +25,19 @@ table {
 	border-collapse: collapse; border-spacing: 0;
 }
 
-/*                                                    */
+/*                  MY STYLES                         */
+.wrapper {
+    display: flex;
+    width: 100%;
+    align-items: center;
+}
 
 .maze {
     width: 700px;
     height: 700px;
     border: 2px solid black;
     background-image: url('../img/grid.gif');
+    margin: 5px 10px;
 }
 
 .player {
@@ -41,4 +47,21 @@ table {
     margin-top: 0;
     transition: all 250ms;
     transform: rotate(90deg);
+}
+
+button {
+    background: #a8a819;
+    height: 70px;
+    width: 140px;
+    border: 1px solid gray;
+    border-radius: 5px;
+    font-family: calibri;
+    text-transform: uppercase;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.4s;
+}
+
+button:hover {
+    background: #d3d300;
 }
