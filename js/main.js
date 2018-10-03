@@ -4,7 +4,14 @@ const DIRECTIONS = {
     DOWN: 180,
     LEFT: 270
 }
-const [UP_KEY, RIGHT_KEY, DOWN_KEY, LEFT_KEY] = [38, 39, 40, 37];
+
+const KEY_CODES = {
+    38: 'UP',
+    39: 'RIGHT',
+    40: 'DOWN',
+    37: 'LEFT'
+}
+
 const [COLS_COUNT, ROWS_COUNT, CELL_SIZE] = [7, 7, 100];
 const STEP = 1;
 const BUTTON = document.querySelector('button');
@@ -18,7 +25,7 @@ class Player {
     }
   }
   
-  class Maze {
+class Maze {
     constructor(cols, rows, cellSize) {
       this.cols = cols;
       this.rows = rows;
@@ -33,107 +40,97 @@ class Game {
         this.playerDiv = player.playerDiv;
         this.maze = maze;
         this.button = button;
-        this.animationIsActive = false;
+        this.animationIsActive = true;
         this.isWall = false;
-        this.addListeners(); // init listeners
+        this.addListener(); // init listeners
+        this.animateMove();
     }
 
-    addListeners(){
-        document.addEventListener('keydown', this.move.bind(this));  
+    addListener(){
+        document.addEventListener('keydown', this.moveByKeys.bind(this));  
         this.button.addEventListener('click', this.animateMove.bind(this));
     }
 
-     move(event){
-        switch (event.keyCode) {
-            case UP_KEY:
-                this.moveUp();
-                break;
-            case DOWN_KEY:
-                this.moveDown();
-                break;
-            case LEFT_KEY:
-                 this.moveLeft();
-                break;
-            case RIGHT_KEY:
-                this.moveRight();
-        }
-
-        this.updateView(); // update the view
-    }
-
-    moveUp (){
-       if ((this.player.row - this.step) >= 0) {
-            this.player.row -= this.step;
-        } else { this.isWall = true;}
-        this.player.direction = DIRECTIONS.UP;
-    }
-
-     moveDown (){
-        if ((this.player.row + this.step) < this.maze.rows) {
-            this.player.row += this.step;
-        }else { this.isWall = true;}
-        this.player.direction = DIRECTIONS.DOWN;
-    }
-
-     moveLeft (){
-        if ((this.player.col - this.step) >= 0) {
-            this.player.col -= this.step;
-        }else { this.isWall = true;}
-        this.player.direction = DIRECTIONS.LEFT;
-    }
-
-     moveRight (){
-        if ((this.player.col + this.step) < this.maze.cols) {
-            this.player.col += this.step;
-       } else { this.isWall = true;}
-        this.player.direction = DIRECTIONS.RIGHT;
-    }
-
-    animate(){
-        if (this.animationIsActive) { // if amimation is in progress make move
-            switch (this.player.direction) { // make move
-                case DIRECTIONS.UP:
-                    this.moveUp();
-                    break;
-                case DIRECTIONS.DOWN:
-                    this.moveDown();
-                    break;
-                case DIRECTIONS.LEFT:
-                    this.moveLeft();
-                    break;
-                case DIRECTIONS.RIGHT:
-                    this.moveRight();
-                    break;
-            }
-            
-            if (this.isWall) { // check whether the player faces the wall
-                if (this.player.direction === DIRECTIONS.LEFT){
-                    this.player.direction = DIRECTIONS.UP;
-                }  else {
-                    this.player.direction += 90;
+    getMoveHandlers(){
+        return {
+            UP () {
+                if ((this.player.row - this.step) >= 0) {
+                    this.player.row -= this.step;
+                } else { 
+                    this.isWall = true;
                 }
-        
-                this.isWall = false;
+                this.player.direction = DIRECTIONS.UP;
+            },
+            DOWN () {
+                if ((this.player.row + this.step) < this.maze.rows) {
+                    this.player.row += this.step;
+                } else { this.isWall = true;}
+                this.player.direction = DIRECTIONS.DOWN;
+            },
+            LEFT () {
+                if ((this.player.col - this.step) >= 0) {
+                    this.player.col -= this.step;
+                } else { this.isWall = true;}
+                this.player.direction = DIRECTIONS.LEFT;
+            },
+            RIGHT () {
+                if ((this.player.col + this.step) < this.maze.cols) {
+                    this.player.col += this.step;
+               } else { this.isWall = true;}
+                this.player.direction = DIRECTIONS.RIGHT;
             }
-
-            this.updateView();
-        
-            setTimeout(this.animate.bind(this), 1000);
-        } else { // if animation was stopped clear interval and stop moving
-            clearTimeout(this.animate.bind(this));
         }
+    }
+
+    moveByKeys(event){
+        const moveHandlers = this.getMoveHandlers();
+        const direction = KEY_CODES[event.keyCode.toString()]; //get direction 'UP'/'DOWN'/..
+        moveHandlers[direction].call(this); // define handler depending on direction
+        this.updateView(); 
+    }
+
+    moveByTimer(){
+        if (this.animationIsActive) { // if animation is in progress, make move
+            this.makeSingleMove();
+            if (this.isWall) { // check whether the player faces the wall
+                this.rotateLeft();
+            }
+            this.updateView();
+            setTimeout(this.moveByTimer.bind(this), 1000);
+        } 
+    }
+
+    makeSingleMove(){
+        const moveHandlers = this.getMoveHandlers();
+        const directionEntries = Object.entries(DIRECTIONS);
+        // get name of the current direction: it's [0] element within the only filtered entry
+        const direction = directionEntries.filter(entry => 
+            entry[1] === this.player.direction)[0][0];
+        moveHandlers[direction].call(this);
     }
 
     animateMove(event){
-        const [START_BTN_TEXT, STOP_BTN_TEXT] = ['Let him go!', 'Stop him!'];
-        this.animationIsActive = !this.animationIsActive;
-        if (this.animationIsActive) {
-            event.target.textContent = STOP_BTN_TEXT;
-            this.animate();
-        } else {
-            event.target.textContent = START_BTN_TEXT;
+        const [START_BTN_TEXT, STOP_BTN_TEXT] = ['Go by timer', 'Stop'];
+        if (event) { // if the method was initialized by click, change the animation status
+          this.animationIsActive = !this.animationIsActive;  
         }
-        
+
+        if (this.animationIsActive) {
+            this.button.textContent = STOP_BTN_TEXT;
+            this.moveByTimer();
+        } else {
+            this.button.textContent = START_BTN_TEXT;
+            clearTimeout(this.moveByTimer); // if animation was stopped clear interval and stop moving
+        }       
+    }
+
+    rotateLeft(){
+        if (this.player.direction === DIRECTIONS.LEFT){
+            this.player.direction = DIRECTIONS.UP; // if you add 90, we get 360, while there are constants for 0, 90, 180, 270 only
+        }  else {
+            this.player.direction += 90;
+        }
+        this.isWall = false; // the barrier was eliminated
     }
 
     updateView(){
