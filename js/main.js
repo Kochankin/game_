@@ -35,15 +35,20 @@ class Game {
     }
 
      move(event){
-        if (event.keyCode === UP_KEY){
-            this.moveUp();
-        } else if (event.keyCode === DOWN_KEY){
-            this.moveDown();
-        } else if (event.keyCode === LEFT_KEY){
-            this.moveLeft();
-        } else if (event.keyCode === RIGHT_KEY){
-            this.moveRight();
+        switch (event.keyCode) {
+            case UP_KEY:
+                this.moveUp();
+                break;
+            case DOWN_KEY:
+                this.moveDown();
+                break;
+            case LEFT_KEY:
+                this.moveLeft();
+                break;
+            case RIGHT_KEY:
+                this.moveRight();
         }
+        
         this.setStyle(); // update the view
     }
 
