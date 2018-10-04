@@ -1,4 +1,10 @@
 # game_
+
+* Try out the game here: https://goofy-aryabhata-546da1.netlify.com/
+* Version with a button to start/stop player animationyou can find in the branch 'buttonControlImplementation' (with no maze implementation)
+* Task text is below (original: https://gist.github.com/criyology/e61ddf00c0cf06507ba620e5c2314fe1)
+
+
 Задание
 
 Нарисовать прямоугольную комнату 7х7 клеток и человечка в ней. По нажатию на стрелочки на клавиатуре человечек двигается по комнате на одну клетку за раз. После перехода человечек должен смотреть в ту сторону, куда двигался. Он не должен ходить сквозь стены, то есть если слева стена, при нажатии стрелки влево человек не двигается, а только смотрит в сторону стены. Всю графику нужно найти в интернете.
