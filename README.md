@@ -1,7 +1,7 @@
 # game_
 
 * Try out the game here: https://goofy-aryabhata-546da1.netlify.com/
-* Version with a button to start/stop player animationyou can find in the branch 'buttonControlImplementation' (with no maze implementation)
+* Version with a button to start/stop player animation you can find in the branch 'buttonControlImplementation' (with no maze implementation)
 * Task text is below (original: https://gist.github.com/criyology/e61ddf00c0cf06507ba620e5c2314fe1)
 
 
